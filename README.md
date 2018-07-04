@@ -35,7 +35,7 @@ class HelloMessage extends React.Component {
 
 // render to dom
 ReactDOM.render(
-  new HelloMessage({ name: "Taylor" }),
+  React.createElement(HelloMessage, {name: "Taylor"),
   document.getElementById("root")
 );
 ```
