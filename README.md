@@ -1,6 +1,6 @@
 # 从零开始开发一个 React
 
-这个是从零开始开发一个 React 系列的第二篇。
+这个是从零开始开发一个 React 系列的第三篇。
 
 ## 先行知识
 
@@ -14,13 +14,9 @@
 
 上一节我们已经实现了 React 官网给的最简单的例子。
 
-我们仍然遗留了两个问题：
+我们仍然遗留了最后个问题：
 
-1.  我们没有使用 React.Component， 而是使用了纯函数
-
-2.  我们没有使用 jsx
-
-我们先来解决第一个问题。
+1.  我们没有使用 jsx
 
 最终实现的效果是这样的：
 
@@ -29,13 +25,13 @@ class HelloMessage extends React.Component {
   // render函数和react的render略有不同
   // 这里借鉴了preact的思想，将props和state通过参数传到render函数中去
   render({ name }) {
-    return React.createElement("div", { name }, `Hello ${name}`);
+    return <div>Hello {name}</div>;
   }
 }
 
 // render to dom
 ReactDOM.render(
-  new HelloMessage({ name: "Taylor" }),
+  <HelloMessage name="Taylor" />,
   document.getElementById("root")
 );
 ```
