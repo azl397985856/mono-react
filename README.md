@@ -34,3 +34,25 @@ ReactDOM.render(
   document.getElementById("container")
 );
 ```
+
+我们也要实现类似的效果，我们真实实现的效果是这样的：
+
+```js
+const HelloMessage = ({ name }) =>
+  React.createElement("div", { name: "Taylor" }, `Hello ${name}`);
+
+// render to dom
+ReactDOM.render(
+  HelloMessage({ name: "Taylor" }),
+  document.getElementById("root")
+);
+```
+
+可以看出区别：
+
+1.  我们没有使用 React.Component， 而是使用了纯函数
+
+2.  我们没有使用 jsx
+
+为了保证尽可能让大家做出来一个最简化版本的。因此我们故意去除了这些东西。
+并且会在接下来的章节中慢慢实现。
