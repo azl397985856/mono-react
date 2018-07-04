@@ -12,47 +12,30 @@
 
 ## 本章要实现的效果
 
-我从 React 的官方文档拿了一个例子过来。
+上一节我们已经实现了 React 官网给的最简单的例子。
 
-官方是这么说的
-
-`We have several examples on the website. Here is the first one to get you started:`
-
-那么就让我们实现这样一个功能开始吧。
-
-> 本章不会实现 jsx 语法，我们会在接下来的章节中实现，不要着急。
-
-```js
-class HelloMessage extends React.Component {
-  render() {
-    return <div>Hello {this.props.name}</div>;
-  }
-}
-
-ReactDOM.render(
-  <HelloMessage name="Taylor" />,
-  document.getElementById("container")
-);
-```
-
-我们也要实现类似的效果，我们真实实现的效果是这样的：
-
-```js
-const HelloMessage = ({ name }) =>
-  React.createElement("div", { name: "Taylor" }, `Hello ${name}`);
-
-// render to dom
-ReactDOM.render(
-  HelloMessage({ name: "Taylor" }),
-  document.getElementById("root")
-);
-```
-
-可以看出区别：
+我们仍然遗留了两个问题：
 
 1.  我们没有使用 React.Component， 而是使用了纯函数
 
 2.  我们没有使用 jsx
 
-为了保证尽可能让大家做出来一个最简化版本的。因此我们故意去除了这些东西。
-并且会在接下来的章节中慢慢实现。
+我们先来解决第一个问题。
+
+最终实现的效果是这样的：
+
+```js
+class HelloMessage extends React.Component {
+  // render函数和react的render略有不同
+  // 这里借鉴了preact的思想，将props和state通过参数传到render函数中去
+  render({ name }) {
+    return React.createElement("div", { name }, `Hello ${name}`);
+  }
+}
+
+// render to dom
+ReactDOM.render(
+  new HelloMessage({ name: "Taylor" }),
+  document.getElementById("root")
+);
+```

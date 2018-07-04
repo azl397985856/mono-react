@@ -1,8 +1,17 @@
+import Component from "./component";
+
 const isListener = propName => propName.startsWith("on");
 const isAttribute = propName => !isListener(propName) && propName != "children";
+const isClass = function(vdom) {
+  return vdom instanceof Component;
+};
 
 const ReactDOM = {
-  render: (vdom, el) => {
+  render(vdom, el) {
+    if (isClass(vdom)) {
+      vdom = vdom.render(vdom.props);
+    }
+
     const { type, props } = vdom;
 
     // Create DOM element
