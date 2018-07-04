@@ -2,23 +2,26 @@ import Component from "./component";
 
 const isListener = propName => propName.startsWith("on");
 const isAttribute = propName => !isListener(propName) && propName != "children";
-const isClass = function(vdom) {
-  return vdom instanceof Component;
+const isClass = function(type) {
+  // type 继承自 Component， 则证明其就是class
+  return type.prototype instanceof Component;
 };
+function getDOM(type, props, el) {
+  const isTextElement = type === "TEXT";
 
+  if (isTextElement) {
+    return document.createTextNode("");
+  } else if (isClass(type)) {
+    return ReactDOM.render(new type(props).render(props), el);
+  }
+  return document.createElement(type);
+}
 const ReactDOM = {
   render(vdom, el) {
-    if (isClass(vdom)) {
-      vdom = vdom.render(vdom.props);
-    }
-
     const { type, props } = vdom;
 
     // Create DOM element
-    const isTextElement = type === "TEXT";
-    const dom = isTextElement
-      ? document.createTextNode("")
-      : document.createElement(type);
+    const dom = getDOM(type, props, el);
 
     // 添加监听函数
     Object.keys(props)
@@ -46,6 +49,7 @@ const ReactDOM = {
 
     // 插入到真实dom
     el.appendChild(dom);
+    return dom;
   }
 };
 

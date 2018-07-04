@@ -6,10 +6,15 @@ const root = document.getElementById("root");
 
 class HelloMessage extends React.Component {
   render({ name }) {
-    return React.createElement("div", { name }, `Hello ${name}`);
+    return React.createElement("div", null, `Hello ${name}`);
   }
 }
 
-// render to dom
-
-ReactDOM.render(new HelloMessage({ name: "Taylor" }), root);
+ReactDOM.render(
+  React.createElement(
+    HelloMessage,
+    { name: "lucifer" },
+    React.createElement(HelloMessage, { name: "Taylor" })
+  ),
+  root
+);
