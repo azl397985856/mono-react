@@ -30,4 +30,16 @@
 
 3. 增加JSX的支持
 
-4. 增加dom-diff
+4. 增加state支持
+
+5. 增加声明周期
+
+6. 增加dom-diff（调和算法）
+
+7. 增加context api
+
+8. 增加ref支持
+
+9. 增加PureComponent
+
+...未完待续
