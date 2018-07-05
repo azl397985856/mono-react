@@ -18,6 +18,21 @@
 
 1.  我们没有使用 jsx
 
+我们知道 jsx 只是 React.createElement 的语法糖，那么其实
+只需要使用者使用 jsx 之后，将 jsx 转化成我原生的 React.createElement 语法就可以了。
+
+说到这里，可能大家都能想到有一个 babel 插件就是做这样的一个事情。
+
+没错，我们直接用就好了。
+
+只需要`使用者`项目中增加如下 .babelrc 就可以了。
+
+```json
++{
++  "plugins": ["transform-react-jsx"]
++}
+```
+
 最终实现的效果是这样的：
 
 ```js
@@ -35,3 +50,7 @@ ReactDOM.render(
   document.getElementById("root")
 );
 ```
+
+大家如果对`transform-react-jsx`的原理有兴趣的话，我考虑专门写一篇介绍它。
+
+感谢你的阅读， 下一节我们[增加 state 支持](https://github.com/azl397985856/mono-react/tree/lecture/part4)
