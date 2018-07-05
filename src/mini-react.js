@@ -25,7 +25,7 @@ function $createElement(type, _props, ...children) {
 }
 
 function createElement(el, props, ...children) {
-  return $createElement(el, props || {}, children);
+  return $createElement(el, props || {}, ...children);
 }
 
 const React = {
