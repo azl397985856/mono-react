@@ -6,7 +6,7 @@
 这个仓库分为两部分，一部分是项目主体，也就是 master 分支。这部分保持最新的代码，并尽可能实现 React 的新特性。
 
 另一部分是供大家学习的部分，分支名称以 lecture 开头，大家可以切换到对应分支，查看相应特性的代码和课程介绍。
-课程目录见后面`课程列表部分`。 大家也可以通过 [github commit](https://github.com/azl397985856/mono-react/commits/master)] 功能进行比较，查看代码的变更。
+课程目录见后面`课程列表部分`。 大家也可以通过 [github commit](https://github.com/azl397985856/mono-react/commits/master) 功能进行比较，查看代码的变更。
 
 ## 先行知识
 
