@@ -33,7 +33,7 @@
 
 4.  [增加 state 支持](https://github.com/azl397985856/mono-react/tree/lecture/part4)
 
-5.  增加声明周期
+5.  [增加声明周期](https://github.com/azl397985856/mono-react/tree/lecture/part5)
 
 6.  增加 dom-diff（调和算法）
 
