@@ -7,6 +7,50 @@ const isClass = function(type) {
   return type.prototype instanceof Component;
 };
 
+function componentDidMount() {}
+// It should return an object to update the state, or null to update nothing.
+function getDerivedStateFromProps(props, state) {
+  return null;
+}
+
+function shouldComponentUpdate() {
+  return true;
+}
+
+function getSnapshotBeforeUpdate(props, state, snapshot) {}
+
+function componentDidUpdate() {}
+
+// later
+// function componentDidCatch() {}
+
+function firstRender(props, state, instance) {
+  // 1.getDerivedStateFromProps
+  (instance.getDerivedStateFromProps || getDerivedStateFromProps)(props, state);
+  // 2.render
+  const vdom = instance.render(props, state);
+  // 3.componentDidMount
+  (instance.componentDidMount || componentDidMount)();
+  return vdom;
+}
+
+function subsquentedRender(props, state, instance) {
+  // 1. getDerivedStateFromProps
+  (instance.getDerivedStateFromProps || getDerivedStateFromProps)(props, state);
+  // 2. shouldComponentUpdate
+  const shouldRender = (instance.shouldComponentUpdate ||
+    shouldComponentUpdate)(props, state);
+  if (!shouldRender) {
+    return instance.vdom;
+  }
+  // 3. render
+  const vdom = instance.render(props, state);
+  // 4. getSnapshotBeforeUpdate
+  (instance.getSnapshotBeforeUpdate || getSnapshotBeforeUpdate)();
+  // 5. componentDidUpdate
+  (instance.componentDidUpdate || componentDidUpdate)();
+  return vdom;
+}
 function getDOM(type, props, el) {
   const isTextElement = type === "TEXT";
 
@@ -16,12 +60,21 @@ function getDOM(type, props, el) {
     // 组件实例只创建一次，创建成功之后挂在到type上
     // 以便下次可以访问
     if (!type.instance) {
-      type.instance = new type(props);
+      const instance = new type(props);
+      type.instance = instance;
+      type.instance.type = type;
+
+      const vdom = firstRender(props, type.instance.state || {}, type.instance);
+      type.instance.vdom = vdom;
+      return ReactDOM.render(vdom, el);
     }
-    return ReactDOM.render(
-      type.instance.render(props, type.instance.state || {}),
-      el
+    const vdom = subsquentedRender(
+      props,
+      type.instance.state || {},
+      type.instance
     );
+    type.instance.vdom = vdom;
+    return ReactDOM.render(vdom, el);
   }
   return document.createElement(type);
 }
