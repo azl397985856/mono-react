@@ -13,11 +13,11 @@ function getDOM(type, props, el) {
   if (isTextElement) {
     return document.createTextNode("");
   } else if (isClass(type)) {
+    // 组件实例只创建一次，创建成功之后挂在到type上
+    // 以便下次可以访问
     if (!type.instance) {
       type.instance = new type(props);
     }
-    // 下面代码需要修改，因为每次调用都会使用最初的state
-    // 需要修改为组件内部维持的state
     return ReactDOM.render(
       type.instance.render(props, type.instance.state || {}),
       el
