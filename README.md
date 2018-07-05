@@ -46,8 +46,6 @@ ReactDOM.render(
 
 最终实现的效果：
 
-上节实现的效果是这样的：
-
 ```js
 class Counter extends React.Component {
   constructor(props) {
