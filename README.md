@@ -39,3 +39,97 @@ ReactDOM.render(
   document.getElementById("root")
 );
 ```
+
+## 添加 React.Component
+
+首先我们定义`React.Component`,
+这个很简单，我们直接使用 es6 的 class 简化代码。
+
+代码如下：
+
+```js
+// component.js
++ class Component {
++  constructor(props) {
++    this.props = props;
++  }
++ }
++ export default Component;
+
+// mini-react.js
+const React = {
+  createElement,
++  Component: require("./component").default
+};
+export default React;
+```
+
+React.render 函数之前只支持普通文本类型和内置类型（div，span 等）。
+对于 class 并不支持，我们现在来改造一下。
+
+代码如下：
+
+```js
+const ReactDOM = {
+  render(vdom, el) {
+    const { type, props } = vdom;
+
+-    const isTextElement = type === "TEXT";	+    const dom = getDOM(type, props, el);
+-    const dom = isTextElement
+-      ? document.createTextNode("")
+-      : document.createElement(type);
+
+    // Create DOM element
++    const dom = getDOM(type, props, el);
+
+    // 添加监听函数
+    Object.keys(props)
+      .filter(isListener)
+      .forEach(name => {
+        const eventType = name.toLowerCase().substring(2);
+        dom.addEventListener(eventType, props[name]);
+      });
+
+    //  添加Attributes
+    Object.keys(props)
+      .filter(isAttribute)
+      .forEach(name => {
+        // className特殊逻辑
+        if (name === "className") {
+          dom.class = props[name];
+        } else {
+          dom[name] = props[name];
+        }
+      });
+
+    // 递归children
+    const childElements = props.children || [];
+    childElements.forEach(childElement => ReactDOM.render(childElement, dom));
+
+    // 插入到真实dom
+    el.appendChild(dom);
++   return dom;
+  }
+};
+```
+
+getDOM 方法用于返回 dom。
+
+```js
++const isClass = function(type) {
++  // type 继承自 Component， 则证明其就是class
++  return type.prototype instanceof Component;
++};
++function getDOM(type, props, el) {
++  const isTextElement = type === "TEXT";
+
++  if (isTextElement) {
++    return document.createTextNode("");
++  } else if (isClass(type)) { // 其实只是加了一个这样的逻辑而已
++    return ReactDOM.render(new type(props).render(props), el);
++  }
++  return document.createElement(type);
++}
+```
+
+感谢你的阅读， 下一节我们[增加 JSX 的支持](https://github.com/azl397985856/mono-react/tree/lecture/part3)
