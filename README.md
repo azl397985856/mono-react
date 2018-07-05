@@ -74,7 +74,7 @@ const ReactDOM = {
   render(vdom, el) {
     const { type, props } = vdom;
 
--    const isTextElement = type === "TEXT";	+    const dom = getDOM(type, props, el);
+-    const isTextElement = type === "TEXT";
 -    const dom = isTextElement
 -      ? document.createTextNode("")
 -      : document.createElement(type);
