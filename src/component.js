@@ -20,6 +20,10 @@ class Component {
     this.getSnapshotBeforeUpdate = this.getSnapshotBeforeUpdate.bind(this);
     this.componentDidUpdate = this.componentDidUpdate.bind(this);
   }
+  shouldComponentUpdate() {}
+  componentDidMount() {}
+  getSnapshotBeforeUpdate() {}
+  componentDidUpdate() {}
   setState(partialState) {
     this.nextState = Object.assign({}, this.state, partialState);
 
