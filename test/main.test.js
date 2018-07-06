@@ -1,6 +1,10 @@
 import React from "../src/mini-react";
 import ReactDOM from "../src/mini-react-dom";
 
+afterEach(() => {
+  window.vdom = null;
+  window.el = null;
+});
 describe("mini-react", () => {
   it("render", () => {
     const root = document.createElement("div");
@@ -9,12 +13,38 @@ describe("mini-react", () => {
     expect(root.innerHTML).toContain("<div>Hello World</div>");
   });
 
-  it("support function", () => {
+  it("support state", () => {
     const root = document.createElement("div");
-    const helloWorld = ({ name }) =>
-      React.createElement("div", { name: "lucifer" }, `Hello ${name}`);
-    ReactDOM.render(helloWorld({ name: "lucifer" }), root);
+    // 否则document.getElementById("mono-react")获取不到节点
+    document.body.appendChild(root);
+    class Counter extends React.Component {
+      constructor(props) {
+        super(props);
+        this.state = {
+          count: 0
+        };
+      }
+      handleClick() {
+        this.setState({
+          count: this.state.count + 1
+        });
+      }
+      render({ name }, { count }) {
+        return (
+          <div id="mono-react" onClick={this.handleClick.bind(this)}>
+            Count: {count}
+          </div>
+        );
+      }
+    }
 
-    expect(root.innerHTML).toContain("<div>Hello lucifer</div>");
+    // render to dom
+    ReactDOM.render(<Counter count={0} />, root);
+    // 模拟三次点击
+    document.getElementById("mono-react").click();
+    document.getElementById("mono-react").click();
+    document.getElementById("mono-react").click();
+
+    expect(root.innerHTML).toContain("Count: 3");
   });
 });
