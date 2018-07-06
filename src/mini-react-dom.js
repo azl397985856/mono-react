@@ -71,7 +71,7 @@ function getDOM(type, props, el) {
     }
     const vdom = subsquentedRender(
       props,
-      type.instance.state || {},
+      type.instance.nextState || {},
       type.instance
     );
     type.instance.vdom = vdom;

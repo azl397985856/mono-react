@@ -30,12 +30,12 @@ class LifeCycleDemo extends React.Component {
       "state:",
       state
     );
-    return {
-      name: props.name
-    };
   }
   getSnapshotBeforeUpdate(props, state) {
     console.log("getSnapshotBeforeUpdate with props: ", props, "state:", state);
+    return {
+      name: "snapshot"
+    };
   }
   componentDidUpdate(props, state, snapshot) {
     console.log(

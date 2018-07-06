@@ -90,13 +90,23 @@ class Component {
 +   this.getSnapshotBeforeUpdate = this.getSnapshotBeforeUpdate.bind(this);
 +   this.componentDidUpdate = this.componentDidUpdate.bind(this)
   }
- ...
+  setState(partialState) {
++   this.nextState = Object.assign({}, this.state, partialState);
+
+    // 在后面的章节（调和算法）我们进行优化
+    reRender(window.vdom, window.el);
+
++   this.state = this.nextState;
+  }
 }
 
 export default Component;
 ```
 
-就是为了绑定 this，防止 this 被指向别的地方。
+`constructor`增加的代码就是为了绑定 this，防止 this 被指向别的地方。
+
+`setState`中增加的代码是为了组件在拿到运算后的 state 和当前组件的`state`。典型的用法就是
+在`shouldComponentUpdate`中判断是否需要更新
 
 然后我们再来修改 react-dom 。
 
@@ -162,7 +172,8 @@ if (!type.instance) {
       type.instance = instance;
       type.instance.type = type;
       // 首次渲染，调用firstRender
-      const vdom = firstRender(props, type.instance.state || {}, type.instance);
+      // 注意这里type.instance.state 改成了 type.instance.nextState
+      const vdom = firstRender(props, type.instance.nextState || {}, type.instance);
       // 保存vdom到instance，后面subsquentedRender如果不需要更新
       // （shouldComponentUpdate返回false）会用到
       type.instance.vdom = vdom;
@@ -205,6 +216,9 @@ class LifeCycleDemo extends React.Component {
   }
   getSnapshotBeforeUpdate(props, state) {
     console.log("getSnapshotBeforeUpdate with props: ", props, "state:", state);
+    return {
+      name: "snapshot"
+    };
   }
   componentDidUpdate(props, state, snapshot) {
     console.log(

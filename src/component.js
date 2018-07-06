@@ -21,10 +21,12 @@ class Component {
     this.componentDidUpdate = this.componentDidUpdate.bind(this);
   }
   setState(partialState) {
-    this.state = Object.assign({}, this.state, partialState);
+    this.nextState = Object.assign({}, this.state, partialState);
 
     // 在后面的章节（调和算法）我们进行优化
     reRender(window.vdom, window.el);
+
+    this.state = this.nextState;
   }
 }
 
