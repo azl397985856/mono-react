@@ -16,7 +16,16 @@
 
 我们先来介绍一下 react 的声明周期（V16.4.1）
 
+ReactV16 的生命周期分为四种，分别为挂载阶段（Mounting）
+更新阶段（Updating），卸载阶段（Unmounting）和发生错误阶段（Error Handling）
+
+这里不介绍各个生命周期详细的作用和用法，只是做一个简单的介绍。
+
 ### Mounting
+
+挂载阶段，会在组件实例化并挂在到节点的时候执行一次，因此对于一个组件实例来说其只会执行一次。
+
+这个阶段的生命周期按照时间顺序排列有：
 
 - constructor(props)
 
@@ -27,6 +36,10 @@
 - componentDidMount()
 
 ### Updating
+
+更新阶段，会在组件 state 或者 props 改变，或者 forceUpdate 调用的时候执行。因此对于一个组件实例来说其会执行多次。
+
+这个阶段的生命周期按照时间顺序排列有：
 
 - static getDerivedStateFromProps(props, state)
 
@@ -42,13 +55,131 @@
 
 ### Unmounting
 
+卸载阶段，会在组件从节点中移除的时候执行一次，因此对于一个组件实例来说其只会执行一次。
+
+这个阶段的生命周期只有一个：
+
 - componentWillUnmount()
 
+> later
+
 ### Error Handling
+
+错误捕获阶段，会在组件组件发生错误的时候执行，因此对于一个组件实例来说其会执行多次。
+
+这个阶段的生命周期只有一个：
 
 - componentDidCatch(error, info)
 
 > later
+
+## 开始实现
+
+我们依然是给 Component 增加生命周期，因此我们往 component.js 中添加代码
+
+```js
+// component.js
+
+
+class Component {
+  constructor(props) {
+    this.props = props;
+    this.state = this.state || {};
++   this.shouldComponentUpdate = this.shouldComponentUpdate.bind(this);
++   this.componentDidMount = this.componentDidMount.bind(this)
++   this.getSnapshotBeforeUpdate = this.getSnapshotBeforeUpdate.bind(this);
++   this.componentDidUpdate = this.componentDidUpdate.bind(this)
+  }
+ ...
+}
+
+export default Component;
+```
+
+就是为了绑定 this，防止 this 被指向别的地方。
+
+然后我们再来修改 react-dom 。
+
+> 以下代码都为新增
+
+我首先定义了各个生命周期。
+然后定义了两个方法，第一个是首次渲染`firstRender`（挂载阶段），
+第二个是接下来的渲染`subsquentedRender`（更新阶段）
+
+```js
+// react-dom.js
+function componentDidMount() {}
+// It should return an object to update the state, or null to update nothing.
+function getDerivedStateFromProps(props, state) {
+  return null;
+}
+
+function shouldComponentUpdate() {
+  return true;
+}
+
+function getSnapshotBeforeUpdate(props, state, snapshot) {}
+
+function componentDidUpdate() {}
+
+// later
+// function componentDidCatch() {}
+
+function firstRender(props, state, instance) {
+  // 1.getDerivedStateFromProps
+  (instance.getDerivedStateFromProps || getDerivedStateFromProps)(props, state);
+  // 2.render
+  const vdom = instance.render(props, state);
+  // 3.componentDidMount
+  (instance.componentDidMount || componentDidMount)();
+  return vdom;
+}
+
+function subsquentedRender(props, state, instance) {
+  // 1. getDerivedStateFromProps
+  (instance.getDerivedStateFromProps || getDerivedStateFromProps)(props, state);
+  // 2. shouldComponentUpdate
+  const shouldRender = (instance.shouldComponentUpdate ||
+    shouldComponentUpdate)(props, state);
+  if (!shouldRender) {
+    return instance.vdom;
+  }
+  // 3. render
+  const vdom = instance.render(props, state);
+  // 4. getSnapshotBeforeUpdate
+  (instance.getSnapshotBeforeUpdate || getSnapshotBeforeUpdate)();
+  // 5. componentDidUpdate
+  (instance.componentDidUpdate || componentDidUpdate)();
+  return vdom;
+}
+```
+
+继续修改 getDOM 方法：
+
+```js
+if (!type.instance) {
+      const instance = new type(props);
+      type.instance = instance;
+      type.instance.type = type;
+      // 首次渲染，调用firstRender
+      const vdom = firstRender(props, type.instance.state || {}, type.instance);
+      // 保存vdom到instance，后面subsquentedRender如果不需要更新
+      // （shouldComponentUpdate返回false）会用到
+      type.instance.vdom = vdom;
+      return ReactDOM.render(vdom, el);
+    }
+    // 更新阶段
+    const vdom = subsquentedRender(
+      props,
+      type.instance.state || {},
+      type.instance
+    );
+    // 保存vdom到instance，后面subsquentedRender如果不需要更新
+    // （shouldComponentUpdate返回false）会用到
+    type.instance.vdom = vdom;
+    return ReactDOM.render(vdom, el);
+}
+```
 
 最终实现效果
 
@@ -59,6 +190,8 @@ class LifeCycleDemo extends React.Component {
     console.log("constructor with props: ", props);
   }
   shouldComponentUpdate(props, state) {
+    // 你可以在这里进行计算，然后返回true，false
+    // 来控制render与否
     console.log(
       "next props: ",
       props,
@@ -103,3 +236,5 @@ ReactDOM.render(
   document.getElementById("root")
 );
 ```
+
+感谢你的阅读， 下一节我们[加 dom-diff（调和算法）] ， 文章还未更新～

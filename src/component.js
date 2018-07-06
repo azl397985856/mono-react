@@ -16,6 +16,9 @@ class Component {
     this.props = props;
     this.state = this.state || {};
     this.shouldComponentUpdate = this.shouldComponentUpdate.bind(this);
+    this.componentDidMount = this.componentDidMount.bind(this);
+    this.getSnapshotBeforeUpdate = this.getSnapshotBeforeUpdate.bind(this);
+    this.componentDidUpdate = this.componentDidUpdate.bind(this);
   }
   setState(partialState) {
     this.state = Object.assign({}, this.state, partialState);

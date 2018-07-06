@@ -13,13 +13,13 @@ function getDerivedStateFromProps(props, state) {
   return null;
 }
 
-function shouldComponentUpdate() {
+function shouldComponentUpdate(props, state) {
   return true;
 }
 
-function getSnapshotBeforeUpdate(props, state, snapshot) {}
+function getSnapshotBeforeUpdate(props, state) {}
 
-function componentDidUpdate() {}
+function componentDidUpdate(props, state, snapshot) {}
 
 // later
 // function componentDidCatch() {}
@@ -46,9 +46,10 @@ function subsquentedRender(props, state, instance) {
   // 3. render
   const vdom = instance.render(props, state);
   // 4. getSnapshotBeforeUpdate
-  (instance.getSnapshotBeforeUpdate || getSnapshotBeforeUpdate)();
+  const snapshot = (instance.getSnapshotBeforeUpdate ||
+    getSnapshotBeforeUpdate)(props, state);
   // 5. componentDidUpdate
-  (instance.componentDidUpdate || componentDidUpdate)();
+  (instance.componentDidUpdate || componentDidUpdate)(props, state, snapshot);
   return vdom;
 }
 function getDOM(type, props, el) {
