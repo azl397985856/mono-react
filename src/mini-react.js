@@ -25,6 +25,6 @@ function createElement(el, props, ...children) {
 
 const React = {
   createElement,
-  Component: require("./component").default
+  Component: require("./component")
 };
 export default React;
