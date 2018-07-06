@@ -59,12 +59,16 @@ ReactDOM.render(
 
 ## 开始实现
 
+React 的思想很简单，很纯粹。就是用 vdom 描述真实 dom，数据驱动 vdom 变更，
+vdom 的变更映射到真实 dom 变更。 其实用于只需要关心数据变更就可以了，其他细节
+React 封装好了。因此开发 React App 在一定程度上可以说是处理数据的过程。
+
 从上面的例子可以看出，我们使用了两个 React 的 API。
 
 ### React.createElement
 
-一个是`React.createElement`, 用于创建 VDOM，
-VDOM 是一种用来描述浏览器 DOM tree 的数据结构。
+`React.createElement`, 用于创建 VDOM，
+VDOM 是一种用来描述浏览器 DOM tree 的 JavaScript 数据结构。
 
 比如如下的 html
 
@@ -75,7 +79,7 @@ VDOM 是一种用来描述浏览器 DOM tree 的数据结构。
     </ul>
 ```
 
-我们通过 type 去区分 DOM 节点的类型，通过 props 去给 DOM 节点绑定 attributes。
+我们可以通过 type 去区分 DOM 节点的类型(ul, li, div, span 等)，通过 props 去给 DOM 节点绑定 attributes。
 children 是它的子节点，拥有一样的数据结构，即具有 type, props 和 children 属性。
 
 上述 DOM tree 经过 VDOM 抽象会变成:
@@ -140,7 +144,7 @@ function createElement(el, props, ...children) {
 
 考虑到文本节点， 处理方式不太一样。 后面会有更多类型的节点，比如 class 节点，我们到时候在添加对应逻辑。
 
-> 友情提示， 代码行前面的 + 代表增加的代码 。 - 代表删除的代码
+> 友情提示， 代码行前面的 + 代表增加的代码 。 - 代表删除的代码。 本系列文章都是这样的约定，之后不再赘述
 
 ```js
 + const TEXT_ELEMENT = "TEXT";
@@ -172,12 +176,24 @@ function createElement(el, props, ...children) {
 
 ### ReactDOM.render
 
-另一个 API 是`ReactDOM.render`。前面提到了`根据 VDOM 可以生成一个的 DOM tree`
+有了 VDOM，我们的另一个工作就是根据 VDOM 生成真实 DOM。
+
+另外前面也提到了`根据 VDOM 可以生成一个的 DOM tree`
 其实就是`ReactDOM.render` 做的事情。
 
 它的函数签名是 `ReactDOM.render(vdom , el)` 。其中 vdom 是我们生成的 vdom，el 则是挂载的 DOM 节点。
 
-代码比较简单，并且有注释，让我们直接看代码吧。
+开始写代码之前让我们总结下我们会用到的 DOM API：
+
+```js
+document.createTextNode(""); // 创建Text节点
+textNode.nodeValue = "hello"; // 我们可以通过设置nodeValue更新text值
+document.createElement(type); // 创建dom节点，type可以是任何支持的html标签。 如div，li，ul，span，p等
+dom.addEventListener(eventType, props[name]); // 给dom添加函数监听事件
+dom[name] = value; // 给dom属性设置值， 比如是符合w3c规范的属性
+```
+
+有了上面的知识就简单多了，代码比较简单，并且有注释，让我们直接看代码吧。
 
 代码如下：
 
