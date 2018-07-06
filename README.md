@@ -22,24 +22,6 @@
 
 我们先来解决第一个问题。
 
-最终实现的效果是这样的：
-
-```js
-class HelloMessage extends React.Component {
-  // render函数和react的render略有不同
-  // 这里借鉴了preact的思想，将props和state通过参数传到render函数中去
-  render({ name }) {
-    return React.createElement("div", { name }, `Hello ${name}`);
-  }
-}
-
-// render to dom
-ReactDOM.render(
-  React.createElement(HelloMessage, {name: "Taylor")},
-  document.getElementById("root")
-);
-```
-
 ## 添加 React.Component
 
 首先我们定义`React.Component`,
@@ -82,29 +64,7 @@ const ReactDOM = {
     // Create DOM element
 +    const dom = getDOM(type, props, el);
 
-    // 添加监听函数
-    Object.keys(props)
-      .filter(isListener)
-      .forEach(name => {
-        const eventType = name.toLowerCase().substring(2);
-        dom.addEventListener(eventType, props[name]);
-      });
-
-    //  添加Attributes
-    Object.keys(props)
-      .filter(isAttribute)
-      .forEach(name => {
-        // className特殊逻辑
-        if (name === "className") {
-          dom.class = props[name];
-        } else {
-          dom[name] = props[name];
-        }
-      });
-
-    // 递归children
-    const childElements = props.children || [];
-    childElements.forEach(childElement => ReactDOM.render(childElement, dom));
+    ...
 
     // 插入到真实dom
     el.appendChild(dom);
@@ -130,6 +90,24 @@ getDOM 方法用于返回 dom。
 +  }
 +  return document.createElement(type);
 +}
+```
+
+最终实现的效果是这样的：
+
+```js
+class HelloMessage extends React.Component {
+  // render函数和react的render略有不同
+  // 这里借鉴了preact的思想，将props和state通过参数传到render函数中去
+  render({ name }) {
+    return React.createElement("div", { name }, `Hello ${name}`);
+  }
+}
+
+// render to dom
+ReactDOM.render(
+  React.createElement(HelloMessage, {name: "Taylor")},
+  document.getElementById("root")
+);
 ```
 
 感谢你的阅读， 下一节我们[增加 JSX 的支持](https://github.com/azl397985856/mono-react/tree/lecture/part3)
