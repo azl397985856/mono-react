@@ -59,8 +59,8 @@ ReactDOM.render(
 +}
 +
  class Component {	 class Component {
-   constructor(props) {	   constructor(props) {
-     this.props = props;	     this.props = props;
+   constructor(props) {
+     this.props = props;
 +    this.state = this.state || {};
 +  }
 +  setState(partialState) {
@@ -108,11 +108,10 @@ getDOM 之前每次调用都会生成一个新的实例，因此这里需要修�
 
 ```js
  function getDOM(type, props, el) {
-   const isTextElement = type === "TEXT";	   const isTextElement = type === "TEXT";
-
-   if (isTextElement) {	   if (isTextElement) {
-     return document.createTextNode("");	     return document.createTextNode("");
-   } else if (isClass(type)) {	   } else if (isClass(type)) {
+   const isTextElement = type === "TEXT";
+   if (isTextElement) {
+     return document.createTextNode("");
+   } else if (isClass(type)) {
 -    return ReactDOM.render(new type(props).render(props), el);	+    // 组件实例只创建一次，创建成功之后挂在到type上
 +    // 以便下次可以访问
 +    if (!type.instance) {
@@ -123,7 +122,7 @@ getDOM 之前每次调用都会生成一个新的实例，因此这里需要修�
 +      el
 +    );
    }	   }
-   return document.createElement(type);	   return document.createElement(type);
+   return document.createElement(type);
  }	 }
 ```
 
