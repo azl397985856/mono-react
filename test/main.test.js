@@ -9,12 +9,19 @@ describe("mini-react", () => {
     expect(root.innerHTML).toContain("<div>Hello World</div>");
   });
 
-  it("support function", () => {
+  it("support jsx", () => {
     const root = document.createElement("div");
-    const helloWorld = ({ name }) =>
-      React.createElement("div", { name: "lucifer" }, `Hello ${name}`);
-    ReactDOM.render(helloWorld({ name: "lucifer" }), root);
+    class HelloMessage extends React.Component {
+      // render函数和react的render略有不同
+      // 这里借鉴了preact的思想，将props和state通过参数传到render函数中去
+      render({ name }) {
+        return <div>Hello {name}</div>;
+      }
+    }
 
-    expect(root.innerHTML).toContain("<div>Hello lucifer</div>");
+    // render to dom
+    ReactDOM.render(<HelloMessage name="Taylor" />, root);
+
+    expect(root.innerHTML).toContain("<div>Hello Taylor</div>");
   });
 });
