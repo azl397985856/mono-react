@@ -58,7 +58,7 @@ ReactDOM.render(
 +  ReactDOM.render(rootReactElement, rootDOMElement);
 +}
 +
- class Component {	 class Component {
+ class Component {
    constructor(props) {
      this.props = props;
 +    this.state = this.state || {};
@@ -69,8 +69,8 @@ ReactDOM.render(
 +    // this.render(this.props, this.state);
 +    // 在后面的章节（调和算法）我们进行优化
 +    reRender(vdom,el);
-   }	   }
- }	 }
+   }
+ }
 ```
 
 setState 方法接受一个对象，用于将其合并到 this.state,然后调用`reRender`重新渲染页面，
@@ -121,9 +121,9 @@ getDOM 之前每次调用都会生成一个新的实例，因此这里需要修�
 +      type.instance.render(props, type.instance.state || {}),
 +      el
 +    );
-   }	   }
+   }
    return document.createElement(type);
- }	 }
+ }
 ```
 
 将 instance 挂在到 type 上，如果下次 type 上有 instance 就表示已经实例话了，不需要重新实例化。
