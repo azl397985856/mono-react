@@ -82,14 +82,6 @@ function getDOM(type, props, el) {
 
 const ReactDOM = {
   render(vdom, el) {
-    // hack
-    if (!window.vdom) {
-      window.vdom = vdom;
-    }
-    if (!window.el) {
-      window.el = el;
-    }
-
     const { type, props } = vdom;
     // Create DOM element
     const dom = getDOM(type, props, el);
@@ -121,6 +113,8 @@ const ReactDOM = {
     // 插入到真实dom
     el.appendChild(dom);
 
+    window.vdom = vdom;
+    window.el = el;
     return dom;
   }
 };
