@@ -1,14 +1,17 @@
 import ReactDOM from "./mini-react-dom";
 
+import { diff } from "./diff";
+import { patch } from "./patch";
+
 function componentWillUnMount() {}
 
-function reRender(rootReactElement, rootDOMElement) {
-  // 移除之前的节点（之后引入调和算法后进行优化）
-  while (rootDOMElement.hasChildNodes()) {
-    // 遍历调用componentWillUnMount
-    rootDOMElement.removeChild(rootDOMElement.lastChild);
-  }
-  ReactDOM.render(rootReactElement, rootDOMElement);
+function reRender(vdom, ovdom, el) {
+  // 找出虚拟dom的差异部分
+  const diffInfo = diff(vdom, ovdom);
+  // 将差异部分应用到真实节点
+  // 更新虚拟dom
+  // 更新旧的虚拟dom
+  patch(el, diffInfo);
 }
 
 class Component {
@@ -28,7 +31,7 @@ class Component {
     this.nextState = Object.assign({}, this.state, partialState);
 
     // 在后面的章节（调和算法）我们进行优化
-    reRender(window.vdom, window.el);
+    reRender(window.vdom, window.ovdom, window.el);
 
     this.state = this.nextState;
   }

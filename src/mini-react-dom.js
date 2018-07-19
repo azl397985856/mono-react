@@ -67,7 +67,8 @@ function getDOM(type, props, el) {
 
       const vdom = firstRender(props, type.instance.state || {}, type.instance);
       type.instance.vdom = vdom;
-      return ReactDOM.render(vdom, el);
+      // TODO: [0]
+      return ReactDOM.render(vdom, el).childNodes[0];
     }
     const vdom = subsquentedRender(
       props,
@@ -75,21 +76,13 @@ function getDOM(type, props, el) {
       type.instance
     );
     type.instance.vdom = vdom;
-    return ReactDOM.render(vdom, el);
+    return ReactDOM.render(vdom, el).childNodes[0];
   }
   return document.createElement(type);
 }
 
 const ReactDOM = {
   render(vdom, el) {
-    // hack
-    if (!window.vdom) {
-      window.vdom = vdom;
-    }
-    if (!window.el) {
-      window.el = el;
-    }
-
     const { type, props } = vdom;
     // Create DOM element
     const dom = getDOM(type, props, el);
@@ -121,7 +114,10 @@ const ReactDOM = {
     // 插入到真实dom
     el.appendChild(dom);
 
-    return dom;
+    window.vdom = vdom;
+    window.el = el;
+
+    return el;
   }
 };
 
