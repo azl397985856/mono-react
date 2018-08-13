@@ -1,5 +1,4 @@
 import ReactDOM from "./mini-react-dom";
-import { diff } from "_list-diff2@0.1.4@list-diff2/lib/diff";
 
 const REPLACE = 0; // 替换
 const ORDER = 1; // children顺序变更
@@ -98,10 +97,6 @@ function reorderChildren(el, moves) {
   });
 }
 
-// TODO: 完成Patch
-// 1. 更新dom
-// 2. 更新vdom
-// 3. 更新ovdom
 function patch(el, diffInfo) {
   // 对象是引用传递
   const walker = { index: 0 };
