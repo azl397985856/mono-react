@@ -16,8 +16,9 @@
 
 前一章的算法比较简单，就是直接将原来的 DOM 移除，然后重新执行一遍 render。
 这对于构建中大型应用是不能接受的。 我们这一章就打算使用 dom-diff 算法进行优化。
-网上关于 dom-diff 的文章多如牛毛，我们这个系列主要是实战，这些理论只是可以才别的地方了解。
-希望大家对 dom-diff 稍有了解再继续阅读。
+网上关于 dom-diff 的文章多如牛毛，我们这个系列主要是实战，这些理论知识可以才别的地方了解。
+
+> 希望大家对 dom-diff 稍有了解再继续阅读。
 
 ## 开始实现
 
@@ -47,12 +48,14 @@ function reRender(vdom, ovdom, el) {
 }
 ```
 
-因此我们要去实现 diff 和 patch 方法。
+因此我们的工作就是要去实现 diff 和 patch 方法。
 
 ### 实现 diff
 
-前面我们讲了虚拟 dom，虚拟 dom 的本质是一个 js 对象，用来表示真实的 dom。并且可以根据虚拟 dom，
-生成唯一的一个真实 dom 结构。
+前面我们讲了虚拟 dom，虚拟 dom 的本质是一个 js 对象，用来表示真实的 dom。
+我们可以根据虚拟 dom，生成唯一的一个真实 dom 结构。
+
+一点点理论：
 
 ```js
 const vdom = {
@@ -96,7 +99,8 @@ const node1DiffInfo = { type: 1, moves: [[{}]] };
 const diffInfo = [node1DiffInfo, node1DiffInfo];
 ```
 
-diff 的具体算法，我这里直接使用了一个库`list-diff2`，有兴趣自己研究下。
+diff 的具体算法，我这里直接使用了一个库`list-diff2`，由于这部分知识讲解起来也要
+花点功夫，这篇文章就不做深入介绍了，有兴趣自己研究下。
 
 ### 实现 patch
 

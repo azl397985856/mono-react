@@ -101,9 +101,13 @@ const ReactDOM = {
       .forEach(name => {
         // className特殊逻辑
         if (name === "className") {
-          dom.class = props[name];
+          dom.setAttribute("class", props[name]);
         } else {
-          dom[name] = props[name];
+          if (dom.setAttribute) {
+            dom.setAttribute(name, props[name]);
+          } else {
+            dom[name] = props[name];
+          }
         }
       });
 

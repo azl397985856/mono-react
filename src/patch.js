@@ -47,18 +47,21 @@ function apply(el, currentDiffInfos) {
         const newNode =
           typeof currentDiffInfo.node === "string"
             ? document.createTextNode(currentDiffInfo.node)
-            : ReactDOM.render(currentDiffInfo.node, el.cloneNode(false));
+            : ReactDOM.render(
+                currentDiffInfo.node,
+                el.parentNode.cloneNode(false)
+              );
 
         el.parentNode.replaceChild(newNode, el);
         break;
-      case REORDER:
+      case ORDER:
         reorderChildren(el, currentDiffInfo.moves);
         break;
-      case PROPS:
+      case PROP:
         setProps(el, currentDiffInfo.props);
         break;
       case TEXT:
-        if (el.textContent) {
+        if (el.textContent !== undefined) {
           el.textContent = currentDiffInfo.content;
         } else {
           el.nodeValue = currentDiffInfo.content;

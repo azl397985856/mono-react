@@ -43,9 +43,7 @@ describe("diff", () => {
 
   it("不同的type，有对应的属性", () => {
     diffInfo.forEach(item => {
-      console.log(item);
       item.forEach(current => {
-        console.log(current);
         if (current.type === REPLACE) {
           expect(current.node).toBeTruthy();
         } else if (current.type === ORDER) {
