@@ -9,9 +9,9 @@ function reRender(rootReactElement, rootDOMElement) {
 }
 
 class Component {
-  constructor(props) {
+  constructor(props, state) {
     this.props = props;
-    this.state = this.state || {};
+    this.state = state || {};
   }
   setState(partialState) {
     this.state = Object.assign({}, this.state, partialState);
