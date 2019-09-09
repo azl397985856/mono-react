@@ -29,6 +29,8 @@ function firstRender(props, state, instance) {
   (instance.getDerivedStateFromProps || getDerivedStateFromProps)(props, state);
   // 2.render
   const vdom = instance.render(props, state);
+  // render函数执行后挂载vdom, 方便didMount调用this
+  instance.vdom = vdom;
   // 3.componentDidMount
   (instance.componentDidMount || componentDidMount)();
   return vdom;
@@ -45,6 +47,7 @@ function subsquentedRender(props, state, instance) {
   }
   // 3. render
   const vdom = instance.render(props, state);
+  instance.vdom = vdom;
   // 4. getSnapshotBeforeUpdate
   const snapshot = (instance.getSnapshotBeforeUpdate ||
     getSnapshotBeforeUpdate)(props, state);
@@ -66,7 +69,7 @@ function getDOM(type, props, el) {
       type.instance.type = type;
 
       const vdom = firstRender(props, type.instance.state || {}, type.instance);
-      type.instance.vdom = vdom;
+
       return ReactDOM.render(vdom, el);
     }
     const vdom = subsquentedRender(
@@ -74,7 +77,6 @@ function getDOM(type, props, el) {
       type.instance.nextState || {},
       type.instance
     );
-    type.instance.vdom = vdom;
     return ReactDOM.render(vdom, el);
   }
   return document.createElement(type);
