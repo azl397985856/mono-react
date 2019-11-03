@@ -16,6 +16,7 @@ function $createElement(type, _props, ...children) {
   props.children = mergedChildren
     .filter(c => c != null && c !== false)
     .map(c => (c instanceof Object ? c : createTextElement(c)));
+
   return { type, props };
 }
 
@@ -25,6 +26,7 @@ function createElement(el, props, ...children) {
 
 const React = {
   createElement,
-  Component: require("./component")
+  Component: require("./component"),
+  createContext: require("./context").createContext
 };
 export default React;

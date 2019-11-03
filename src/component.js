@@ -17,6 +17,7 @@ function reRender(vdom, ovdom, el) {
 class Component {
   constructor(props) {
     this.props = props;
+    this.context = this.constructor.contextType && this.constructor.contextType.Provider.currentValue;
     this.state = this.state || {};
     this.shouldComponentUpdate = this.shouldComponentUpdate.bind(this);
     this.componentDidMount = this.componentDidMount.bind(this);

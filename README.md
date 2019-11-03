@@ -1,6 +1,6 @@
 # 从零开始开发一个 React
 
-这个是从零开始开发一个 React 系列的第六篇。
+这个是从零开始开发一个 React 系列的第七篇。
 
 ## 先行知识
 
@@ -12,156 +12,129 @@
 
 ## 本章要实现的效果
 
-本章主要实现 react 的 dom-diff（调和算法）。
+本章主要实现 react 的 context api。
 
-前一章的算法比较简单，就是直接将原来的 DOM 移除，然后重新执行一遍 render。
-这对于构建中大型应用是不能接受的。 我们这一章就打算使用 dom-diff 算法进行优化。
-网上关于 dom-diff 的文章多如牛毛，我们这个系列主要是实战，这些理论知识可以才别的地方了解。
+Context 提供了一个无需为每层组件手动添加 props，就能在组件树间进行数据传递的方法。
 
-> 希望大家对 dom-diff 稍有了解再继续阅读。
+在一个典型的 React 应用中，数据是通过 props 属性自上而下（由父及子）进行传递的，但这种做法对于某些类型的属性而言是极其繁琐的（例如：地区偏好，UI 主题），这些属性是应用程序中许多组件都需要的。Context 提供了一种在组件之间共享此类值的方式，而不必显式地通过组件树的逐层传递 props。 
 
 ## 开始实现
 
-我们将之前的代码做一些修改，之前是这样的：
+我们继续拿官网的一个[关于Context基础API的例子](https://zh-hans.reactjs.org/docs/context.html#___gatsby)来做。
 
-```js
-function reRender(rootReactElement, rootDOMElement) {
-  // 移除之前的节点（之后引入调和算法后进行优化）
-  while (rootDOMElement.hasChildNodes()) {
-    // 遍历调用componentWillUnMount
-    rootDOMElement.removeChild(rootDOMElement.lastChild);
+```jsx
+// Context 可以让我们无须明确地传遍每一个组件，就能将值深入传递进组件树。
+// 为当前的 theme 创建一个 context（“light”为默认值）。
+const ThemeContext = React.createContext('light');
+
+class App extends React.Component {
+  render() {
+    // 使用一个 Provider 来将当前的 theme 传递给以下的组件树。
+    // 无论多深，任何组件都能读取这个值。
+    // 在这个例子中，我们将 “dark” 作为当前的值传递下去。
+    return (
+      <ThemeContext.Provider value="dark">
+        <Toolbar />
+      </ThemeContext.Provider>
+    );
   }
-  ReactDOM.render(rootReactElement, rootDOMElement);
 }
+
+// 中间的组件再也不必指明往下传递 theme 了。
+function Toolbar(props) {
+  return (
+    <div>
+      <ThemedButton />
+    </div>
+  );
+}
+
+class ThemedButton extends React.Component {
+  // 指定 contextType 读取当前的 theme context。
+  // React 会往上找到最近的 theme Provider，然后使用它的值。
+  // 在这个例子中，当前的 theme 值为 “dark”。
+  static contextType = ThemeContext;
+  render() {
+    return <Button theme={this.context} />;
+  }
+}
+
 ```
 
-我们要改成性能更好的写法：
 
+这里一共需要实现的API有`React.createContext`, 还有一个`contextType`.
+
+### 导出 React.createContext API
+我们首先要做的第一件事情就是导出createContextAPI， 尽管这个API我们还没写，我们先占个位置。
 ```js
-function reRender(vdom, ovdom, el) {
-  // 找出虚拟dom的差异部分
-  const diffInfo = diff(vdom, ovdom);
-  // 将差异部分应用到真实节点
-  // 更新虚拟dom
-  // 更新旧的虚拟dom
-  patch(el, diffInfo);
-}
-```
 
-因此我们的工作就是要去实现 diff 和 patch 方法。
-
-### 实现 diff
-
-前面我们讲了虚拟 dom，虚拟 dom 的本质是一个 js 对象，用来表示真实的 dom。
-我们可以根据虚拟 dom，生成唯一的一个真实 dom 结构。
-
-一点点理论：
-
-```js
-const vdom = {
-  type: "div",
-  props: {},
-  children: []
+const React = {
+  createElement,
+  Component: require("./component"),
++  createContext: require("./context").createContext
 };
-
-const ovdom = {
-  type: "div",
-  props: {
-    className: "red"
-  },
-  children: []
-};
 ```
 
-上面是两个 vdom，一个是变化前的我们极为 ovdom，另外一个是变化后的我们称之为 vdom。
-
-我们的目标就是比较出两者的差异，然后将差异传给 patch，让 patch 最终给 current dom 打补丁，去生成新的真实 dom。
-
-我们需要一种数据结构来完成这样的事情，在讲解数据结构之前，我们来看下如何给真实 dom 打补丁。
-其实无外乎替换，调整顺序，修改属性，修改文本。 我们用一个常量记住这些类型方便使用
+### 实现数据的存储
+我们新建一个文件`context.js` 内容如下：
 
 ```js
-const REPLACE = 0; // 替换
-const ORDER = 1; // children顺序变更
-const PROP = 2; // 属性变更
-const TEXT = 3; // 文本变更
+
++ import React from './mini-react';
++ import Component from './component';
+
+
++ export function createContext(defaultValue) {
++	return {
++		Provider: class Provider extends Component {
++			render() {
++				return <div></div>
++			}	
++		}
++	}
++}
+
 ```
 
-我们需要去遍历这个树，然后将每一个节点的信息都存起来。我们深度遍历树，然后一次给节点一个索引。
-
-数据结构形如：
+我们先放一个空壳子进去，接下来我们就要实现这个，其实代码很简单。
 
 ```js
-// type的含义前面通过常量声明过了
-const node0DiffInfo = { type: 2, props: {} };
-const node1DiffInfo = { type: 1, moves: [[{}]] };
+import React from './mini-react';
+import Component from './component';
 
-const diffInfo = [node1DiffInfo, node1DiffInfo];
-```
 
-diff 的具体算法，我这里直接使用了一个库`list-diff2`，由于这部分知识讲解起来也要
-花点功夫，这篇文章就不做深入介绍了，有兴趣自己研究下。
-
-### 实现 patch
-
-我们已经拿到 diff info 了，剩下工作就简单了，直接将 diff info 应用到树上就好了。
-也是一个深度遍历。
-
-核心代码：
-
-```js
-function dfs(el, walker, diffInfo) {
-  var currentDiffInfos = diffInfo[walker.index];
-
-  var len = el.childNodes ? el.childNodes.length : 0;
-  for (let i = 0; i < len; i++) {
-    const child = el.childNodes[i];
-    walker.index++;
-    dfs(child, walker, diffInfo);
-  }
-
-  if (currentDiffInfos) {
-    apply(el, currentDiffInfos);
-  }
+export function createContext(defaultValue) {
+	return {
+		Provider: class Provider extends Component {
+			render() {
++				const currentValue = this.props.value;
++				Provider.currentValue = currentValue || defaultValue;
+				return <div></div>
+			}	
+		}
+	}
 }
+
 ```
+### 实现数据的读取
+两行代码搞定了context数据的更新逻辑，如何让所有组件都能接受到里面的值呢？ 我们需要修改下`Component`的实现。
 
-apply 的代码比较简单，就是根据之前声明的类型调用原生的 web-api。
-
-代码是这样的：
+简单增加一行代码:
 
 ```js
-function apply(el, currentDiffInfos) {
-  currentDiffInfos.forEach(function(currentDiffInfo) {
-    switch (currentDiffInfo.type) {
-      case REPLACE:
-        const newNode =
-          typeof currentDiffInfo.node === "string"
-            ? document.createTextNode(currentDiffInfo.node)
-            : ReactDOM.render(currentDiffInfo.node, el.cloneNode(false));
-
-        el.parentNode.replaceChild(newNode, el);
-        break;
-      case REORDER:
-        reorderChildren(el, currentDiffInfo.moves);
-        break;
-      case PROPS:
-        setProps(el, currentDiffInfo.props);
-        break;
-      case TEXT:
-        if (el.textContent) {
-          el.textContent = currentDiffInfo.content;
-        } else {
-          el.nodeValue = currentDiffInfo.content;
-        }
-        break;
-      default:
-        throw new Error("未知类型 " + currentDiffInfo.type);
-    }
-  });
+class Component {
+  constructor(props) {
+    this.props = props;
++    this.context = this.constructor.contextType && this.constructor.contextType.Provider.currentValue;
+    ...
+  }
+  ...
 }
+
 ```
+
+
 
 ## 总结
 
-感谢你的阅读， 下一节我们[引入 context api] ， 文章还未更新～
+本节实现了React的Context APi相关的功能， 下一节我们引入Ref(文章未更新)

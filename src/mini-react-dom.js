@@ -7,6 +7,15 @@ const isClass = function(type) {
   return type.prototype instanceof Component;
 };
 
+const isFunctionComponnet = function(v) {
+  const type = v instanceof Function ? v.name : v;
+  return (
+    type[0] &&
+    type[0].charCodeAt(0) >= "A".charCodeAt(0) &&
+    type[0].charCodeAt(0) <= "Z".charCodeAt(0)
+  );
+};
+
 function componentDidMount() {}
 // It should return an object to update the state, or null to update nothing.
 function getDerivedStateFromProps(props, state) {
@@ -76,7 +85,10 @@ function getDOM(type, props, el) {
       type.instance
     );
     type.instance.vdom = vdom;
+
     return ReactDOM.render(vdom, el).childNodes[0];
+  } else if (isFunctionComponnet(type)) {
+    return ReactDOM.render(type(props), el).childNodes[0];
   }
   return document.createElement(type);
 }
@@ -113,6 +125,7 @@ const ReactDOM = {
 
     // 递归children
     const childElements = props.children || [];
+
     childElements.forEach(childElement => ReactDOM.render(childElement, dom));
 
     // 插入到真实dom
@@ -122,7 +135,7 @@ const ReactDOM = {
     window.el = el;
 
     return el;
-  }
+  },
 };
 
 export default ReactDOM;
