@@ -164,4 +164,4 @@ function apply(el, currentDiffInfos) {
 
 ## 总结
 
-感谢你的阅读， 下一节我们[引入 context api] ， 文章还未更新～
+感谢你的阅读， 下一节我们[引入 context api](https://github.com/azl397985856/mono-react/tree/lecture/part7)
