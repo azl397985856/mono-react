@@ -41,7 +41,7 @@
 
 6.  [增加 dom-diff（调和算法）](https://github.com/azl397985856/mono-react/tree/lecture/part6)
 
-7.  增加 context api
+7.  [增加 context api](https://github.com/azl397985856/mono-react/tree/lecture/part7)
 
 8.  增加 ref 支持
 
