@@ -34,6 +34,17 @@ Context 提供了一个无需为每层组件手动添加 props，就能在组件
 
 我们继续拿官网的一个[关于Context基础API的例子](https://zh-hans.reactjs.org/docs/context.html#___gatsby)来做。
 
+我们需要将theme从顶层的APP组件传递到最下层的Button，从而Button能够根据主题的不同显示不同的样式，不使用Context的话是这样的：
+
+![](https://tva1.sinaimg.cn/large/006y8mN6ly1g8n5vdlp4bj30bn085mx9.jpg)
+
+
+使用Context的话是这样的：
+
+![](https://tva1.sinaimg.cn/large/006y8mN6ly1g8n5x8hhk9j307z07p0sm.jpg)
+
+代码如下：
+
 ```jsx
 // Context 可以让我们无须明确地传遍每一个组件，就能将值深入传递进组件树。
 // 为当前的 theme 创建一个 context（“light”为默认值）。
@@ -74,7 +85,7 @@ class ThemedButton extends React.Component {
 ```
 
 
-这里一共需要实现的API有`React.createContext`, 还有一个`contextType`.
+通过代码发现这里一共需要实现的API有`React.createContext`, 还有一个`contextType`.其中`React.createContext`是会返回一个对象。这个对象有一个key为Provider的组件。 这个组件接受一个value的prop并将其作为context的值。 contextType是一个静态属性，也就说所有的组件实例都公用一个，没必要都产生一个。我们的组件从Context里读取最新的数据即可。
 
 ### 导出 React.createContext API
 我们首先要做的第一件事情就是导出createContextAPI， 尽管这个API我们还没写，我们先占个位置。
