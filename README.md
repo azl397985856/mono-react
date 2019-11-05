@@ -1,6 +1,18 @@
 # 从零开始开发一个 React
 
-这个是从零开始开发一个 React 系列的第七篇。
+这个是从零开始开发一个 React 系列的第七篇。想要访问之前的内容可以点击下方的链接进行访问：
+
+1.  [最简单的实现，包括 vdom 结构，createElement，ReactDOM.render](https://github.com/azl397985856/mono-react/tree/lecture/part1)
+
+2.  [增加 Class 的支持](https://github.com/azl397985856/mono-react/tree/lecture/part2)
+
+3.  [增加 JSX 的支持](https://github.com/azl397985856/mono-react/tree/lecture/part3)
+
+4.  [增加 state 支持](https://github.com/azl397985856/mono-react/tree/lecture/part4)
+
+5.  [增加声明周期](https://github.com/azl397985856/mono-react/tree/lecture/part5)
+
+6.  [增加 dom-diff（调和算法）](https://github.com/azl397985856/mono-react/tree/lecture/part6)
 
 ## 先行知识
 
@@ -12,7 +24,7 @@
 
 ## 本章要实现的效果
 
-本章主要实现 react 的 context api。
+本章主要实现 react 的 Context API。
 
 Context 提供了一个无需为每层组件手动添加 props，就能在组件树间进行数据传递的方法。
 
@@ -137,4 +149,4 @@ class Component {
 
 ## 总结
 
-本节实现了React的Context APi相关的功能， 下一节我们引入Ref(文章未更新)
+本节实现了React的Context API相关的功能， 下一节我们引入Ref(文章未更新)
