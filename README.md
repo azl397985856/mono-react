@@ -87,10 +87,11 @@ class ThemedButton extends React.Component {
 
 通过代码发现这里一共需要实现的API有`React.createContext`, 还有一个`contextType`.其中`React.createContext`是会返回一个对象。这个对象有一个key为Provider的组件。 这个组件接受一个value的prop并将其作为context的值。 contextType是一个静态属性，也就说所有的组件实例都公用一个，没必要都产生一个。我们的组件从Context里读取最新的数据即可。
 
+接下来我们分别实现`React.createContext`和`contextType`。
+
 ### 导出 React.createContext API
 我们首先要做的第一件事情就是导出createContextAPI， 尽管这个API我们还没写，我们先占个位置。
 ```js
-
 const React = {
   createElement,
   Component: require("./component"),
@@ -99,7 +100,7 @@ const React = {
 ```
 
 ### 实现数据的存储
-我们新建一个文件`context.js` 内容如下：
+我们新建一个文件`context.js` 我们先放一个空壳子进去，接下来我们就要实现这个，其实代码很简单。
 
 ```js
 
@@ -119,7 +120,8 @@ const React = {
 
 ```
 
-我们先放一个空壳子进去，接下来我们就要实现这个，其实代码很简单。
+接下来我们填充具体的逻辑，逻辑很简单，直接上代码。
+
 
 ```js
 import React from './mini-react';
@@ -140,7 +142,7 @@ export function createContext(defaultValue) {
 
 ```
 ### 实现数据的读取
-两行代码搞定了context数据的更新逻辑，如何让所有组件都能接受到里面的值呢？ 我们需要修改下`Component`的实现。
+两行代码搞定了context数据的更新逻辑，如何让所有组件都能接受到里面的值呢？ 接下来我们需要修改下`Component`的实现。
 
 简单增加一行代码:
 
