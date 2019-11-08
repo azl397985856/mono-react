@@ -33,14 +33,18 @@ function componentDidUpdate(props, state, snapshot) {}
 // later
 // function componentDidCatch() {}
 
-function firstRender(props, state, instance) {
+function firstRender(props, state, instance, el, type) {
   // 1.getDerivedStateFromProps
   (instance.getDerivedStateFromProps || getDerivedStateFromProps)(props, state);
   // 2.render
+
   const vdom = instance.render(props, state);
+  type.instance.vdom = vdom;
+  const dom = ReactDOM.render(vdom, el).childNodes[0];
   // 3.componentDidMount
-  (instance.componentDidMount || componentDidMount)();
-  return vdom;
+  (instance.componentDidMount || componentDidMount)(dom);
+
+  return dom;
 }
 
 function subsquentedRender(props, state, instance) {
@@ -54,12 +58,16 @@ function subsquentedRender(props, state, instance) {
   }
   // 3. render
   const vdom = instance.render(props, state);
+
   // 4. getSnapshotBeforeUpdate
   const snapshot = (instance.getSnapshotBeforeUpdate ||
     getSnapshotBeforeUpdate)(props, state);
   // 5. componentDidUpdate
   (instance.componentDidUpdate || componentDidUpdate)(props, state, snapshot);
-  return vdom;
+  type.instance.vdom = vdom;
+
+  const dom = ReactDOM.render(vdom, el).childNodes[0];
+  return dom;
 }
 function getDOM(type, props, el) {
   const isTextElement = type === "TEXT";
@@ -74,29 +82,51 @@ function getDOM(type, props, el) {
       type.instance = instance;
       type.instance.type = type;
 
-      const vdom = firstRender(props, type.instance.state || {}, type.instance);
-      type.instance.vdom = vdom;
+      const dom = firstRender(
+        props,
+        type.instance.state || {},
+        type.instance,
+        el,
+        type
+      );
+
+      // 挂载ref
+      if (typeof props.ref === "object") {
+        props.ref.current = instance;
+      }
+      if (typeof props.ref === "function") {
+        props.ref.current = props.ref(instance);
+      }
+
       // TODO: [0]
-      return ReactDOM.render(vdom, el).childNodes[0];
+      return dom;
     }
-    const vdom = subsquentedRender(
+    const dom = subsquentedRender(
       props,
       type.instance.nextState || {},
       type.instance
     );
-    type.instance.vdom = vdom;
-
-    return ReactDOM.render(vdom, el).childNodes[0];
+    return dom;
   } else if (isFunctionComponnet(type)) {
     return ReactDOM.render(type(props), el).childNodes[0];
   }
-  return document.createElement(type);
+  const dom = document.createElement(type);
+  // 挂载ref
+  if (typeof props.ref === "object") {
+    props.ref.current = dom;
+  }
+  if (typeof props.ref === "function") {
+    props.ref.current = props.ref(dom);
+  }
+
+  return dom;
 }
 
 const ReactDOM = {
   render(vdom, el) {
     const { type, props } = vdom;
     // Create DOM element
+
     const dom = getDOM(type, props, el);
 
     // 添加监听函数

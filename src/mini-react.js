@@ -27,6 +27,7 @@ function createElement(el, props, ...children) {
 const React = {
   createElement,
   Component: require("./component"),
-  createContext: require("./context").createContext
+  createContext: require("./context").createContext,
+  createRef: require("./ref").createRef,
 };
 export default React;

@@ -106,5 +106,5 @@ function patch(el, diffInfo) {
   dfs(el, walker, diffInfo);
 }
 module.exports = {
-  patch
+  patch,
 };
